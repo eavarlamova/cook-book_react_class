@@ -8,6 +8,7 @@ import {
     Typography,
     CardActions,
     CardContent,
+    Tooltip,
 } from '@material-ui/core';
 
 import '../../index.scss';
@@ -17,7 +18,7 @@ class Cards extends PureComponent {
         super(props)
     }
     render() {
-        const { props: { allDishes } } = this;
+        const { props: { allDishes , deleteDish} } = this;
         return (
             <>
                 {
@@ -35,17 +36,19 @@ class Cards extends PureComponent {
                                             {discription}
                                         </Typography>
                                     </div>
+                                    <Tooltip title='callories' aria-label='callories'>
                                     <div> {callories} </div>
+                                    </Tooltip>
                                 </CardContent>
                                 <CardActions>
                                     <Link href={`/${id}`}>
                                         <Button size="small" color="primary">
                                             open ingrededients
-                        </Button>
+                                        </Button>
                                     </Link>
-                                    <Button size="small" color="primary" onClick={() => { this.deleteDish(id) }}>
+                                    <Button size="small" color="primary" onClick={() => { deleteDish(id) }}>
                                         delete
-                        </Button>
+                                    </Button>
                                 </CardActions>
                             </Card>
                         ))

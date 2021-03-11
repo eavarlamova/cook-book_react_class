@@ -93,7 +93,7 @@ class Dishes extends PureComponent {
             add dish
           </Button>
 
-          <Cards allDishes={allDishes} />
+          <Cards allDishes={allDishes} deleteDish={this.deleteDish}/>
         </div>
       </div>
     )
