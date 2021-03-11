@@ -1,0 +1,26 @@
+.dish {
+    &__add-form{
+        width: 80%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin: auto;
+    };
+    &__card{
+        margin-top: 5%;
+    };
+    &__card-discription{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        :first-child{
+            width: 95%;
+        }
+
+        div {
+            word-break: break-all;
+        }
+    }
+    
+}
