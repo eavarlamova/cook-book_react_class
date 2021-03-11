@@ -6,6 +6,7 @@ import {
 
 import Cards from './components/Cards';
 import Navbar from '../../components/Navbar';
+import { getDataFromLS, setDataToLS } from '../../utils/localStorageMethods';
 
 import "./index.scss";
 
@@ -26,6 +27,12 @@ class Dishes extends PureComponent {
     this.addDish = this.addDish.bind(this);
     this.deleteDish = this.deleteDish.bind(this);
     this.handleChange = this.handleChange.bind(this);
+  };
+
+  componentDidMount() {
+    this.setState({
+      allDishes: getDataFromLS('allDishes')
+    })
   }
 
   handleChange({ target: { name, value } }) {
@@ -52,7 +59,7 @@ class Dishes extends PureComponent {
           discription: '',
           callories: 0,
         }
-      })
+      }, () => { setDataToLS('allDishes', this.state.allDishes) })
     }
   };
 
@@ -60,7 +67,7 @@ class Dishes extends PureComponent {
     const updateAllDishes = this.state.allDishes.filter(({ id }) => id !== idOfCurrentDish);
     this.setState({
       allDishes: updateAllDishes,
-    });
+    }, () => { setDataToLS('allDishes', this.state.allDishes) });
   };
 
   render() {
@@ -93,7 +100,7 @@ class Dishes extends PureComponent {
             add dish
           </Button>
 
-          <Cards allDishes={allDishes} deleteDish={this.deleteDish}/>
+          <Cards allDishes={allDishes} deleteDish={this.deleteDish} />
         </div>
       </div>
     )
