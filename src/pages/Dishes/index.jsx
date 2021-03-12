@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+
 import {
   Button,
   TextField,
@@ -69,15 +70,24 @@ class Dishes extends PureComponent {
     const updateAllDishes = this.state.allDishes.filter(({ id }) => id !== idOfCurrentDish);
     this.setState({
       allDishes: updateAllDishes,
-    }, () => { 
-      setDataToLS('allDishes', this.state.allDishes) 
-      const allIngredients = getDataFromLS('allIngredients').filter(({dishId}) => (Number(dishId) !== idOfCurrentDish));
+    }, () => {
+      setDataToLS('allDishes', this.state.allDishes)
+      const allIngredients = getDataFromLS('allIngredients').filter(({ dishId }) => (Number(dishId) !== idOfCurrentDish));
       setDataToLS('allIngredients', allIngredients);
     });
-  }; 
+  };
 
   render() {
-    const { state: { currentDish: { name, discription }, allDishes } } = this;
+    const {
+      state: {
+        currentDish: {
+          name,
+          discription
+        },
+        allDishes,
+      }
+    } = this;
+    
     return (
       <div className="dish">
         <Navbar> dishes </Navbar>

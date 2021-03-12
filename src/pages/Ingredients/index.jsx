@@ -3,14 +3,12 @@ import React, { PureComponent } from 'react';
 import {
   Button,
   TextField,
-  Typography,
-  InputAdornment
+  InputAdornment,
 } from '@material-ui/core';
 import {
   Clear as ClearIcon,
   DragHandle as DragHandleIcon
 } from '@material-ui/icons/';
-
 
 import Cards from './components/Cards';
 import Navbar from '../../components/Navbar';
@@ -28,15 +26,16 @@ class Ingredients extends PureComponent {
       currentIngredient: {
         id: Math.random(),
         name: '',
-        calloriesIn100Grams: 0,
         gramsTotal: 0,
         calloriesTotal: 0,
+        calloriesIn100Grams: 0,
         dishId: this.props.match.params.id,
       }
     }
 
     this.handleChange = this.handleChange.bind(this);
     this.addIngredient = this.addIngredient.bind(this);
+    this.updateDataInLS = this.updateDataInLS.bind(this);
     this.deleteIngredient = this.deleteIngredient.bind(this);
     this.chooseNumberFromString = this.chooseNumberFromString.bind(this);
     this.setChangingValueForCurrentDish = this.setChangingValueForCurrentDish.bind(this);
@@ -66,7 +65,8 @@ class Ingredients extends PureComponent {
             id: idOfCurrentDish
           }
         }
-      } } = this;
+      }
+    } = this;
 
     const totalValueForCurrentDish = allIngredientsOfCurrentDish.reduce((totalValue, { gramsTotal, calloriesTotal }) => ({
       grams: totalValue.grams + gramsTotal,
@@ -98,7 +98,15 @@ class Ingredients extends PureComponent {
         [name]: valueAfterNormolize,
       },
     }, () => {
-      const { state: { currentIngredient: { calloriesTotal, calloriesIn100Grams, gramsTotal } } } = this;
+      const {
+        state: {
+          currentIngredient: {
+            gramsTotal,
+            calloriesTotal,
+            calloriesIn100Grams,
+          }
+        }
+      } = this;
       this.setState({
         currentIngredient: {
           ...this.state.currentIngredient,
@@ -106,6 +114,11 @@ class Ingredients extends PureComponent {
         }
       })
     })
+  };
+
+  updateDataInLS() {
+    setDataToLS('allIngredients', this.state.allIngredients);
+    this.setChangingValueForCurrentDish();
   };
 
   addIngredient() {
@@ -144,11 +157,8 @@ class Ingredients extends PureComponent {
           gramsTotal: 0,
           calloriesTotal: 0,
           dishId: id,
-        }
-      }, () => {
-        setDataToLS('allIngredients', this.state.allIngredients);
-        this.setChangingValueForCurrentDish();
-      })
+        },
+      }, this.updateDataInLS)
     }
   };
 
@@ -165,10 +175,7 @@ class Ingredients extends PureComponent {
     this.setState({
       allIngredients: updateAllIngredients,
       allIngredientsOfCurrentDish: updateAllIngredientsOfCurrentDish,
-    }, () => {
-      setDataToLS('allIngredients', this.state.allIngredients);
-      this.setChangingValueForCurrentDish();
-    })
+    }, this.updateDataInLS)
   };
 
   render() {
@@ -224,7 +231,6 @@ class Ingredients extends PureComponent {
                   startAdornment: <InputAdornment position="start">total calls</InputAdornment>,
                 }}
                 label="it`s total callories in this ingredient"
-
               />
             </div>
             <Button
@@ -242,7 +248,6 @@ class Ingredients extends PureComponent {
             className="ingredient__card"
           />
         </div>
-                Welcome to Ingredients
       </>
     )
   }

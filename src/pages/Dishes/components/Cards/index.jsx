@@ -13,9 +13,6 @@ import {
 import '../../index.scss';
 
 class Cards extends PureComponent {
-  constructor(props) {
-    super(props)
-  }
   render() {
     const { props: { allDishes, deleteDish } } = this;
     return (
@@ -37,7 +34,7 @@ class Cards extends PureComponent {
                   </div>
                   <div className="dish__weight-info">
                     <Tooltip title='callories' aria-label='callories'>
-                      <div> {callories} call </div>
+                      <div> {Math.ceil(callories)} call </div>
                     </Tooltip>
                     <Tooltip title='weight' aria-label='weight in grams'>
                       <div> {weight} g </div>
@@ -48,11 +45,11 @@ class Cards extends PureComponent {
                   <Link href={`/${id}`}>
                     <Button size="small" color="primary">
                       open ingrededients
-                                        </Button>
+                    </Button>
                   </Link>
                   <Button size="small" color="primary" onClick={() => { deleteDish(id) }}>
                     delete
-                                    </Button>
+                  </Button>
                 </CardActions>
               </Card>
             ))
