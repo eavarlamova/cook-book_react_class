@@ -23,7 +23,7 @@ class Cards extends PureComponent {
         {
           allDishes
             ?
-            allDishes.map(({ id, name, discription, callories }) => (
+            allDishes.map(({ id, name, discription, callories, weight }) => (
               <Card className='dish__card' key={id}>
 
                 <CardContent className="dish__card-discription">
@@ -35,9 +35,14 @@ class Cards extends PureComponent {
                       {discription}
                     </Typography>
                   </div>
-                  <Tooltip title='callories' aria-label='callories'>
-                    <div> {callories} </div>
-                  </Tooltip>
+                  <div className="dish__weight-info">
+                    <Tooltip title='callories' aria-label='callories'>
+                      <div> {callories} call </div>
+                    </Tooltip>
+                    <Tooltip title='weight' aria-label='weight in grams'>
+                      <div> {weight} g </div>
+                    </Tooltip>
+                  </div>
                 </CardContent>
                 <CardActions>
                   <Link href={`/${id}`}>

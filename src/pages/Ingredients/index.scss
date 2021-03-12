@@ -1,0 +1,14 @@
+@import '../../index.scss';
+
+.ingredient {
+    @extend %flex-center-80;
+
+
+    &__card {
+        margin-top: 5%;
+    };
+    &__count-callories {
+        display: flex;
+        align-items: center;
+    };
+}

@@ -1,10 +1,8 @@
+@import '../../index.scss';
+
 .dish {
     &__add-form{
-        width: 80%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        margin: auto;
+        @extend %flex-center-80;
     };
     &__card{
         margin-top: 5%;
@@ -14,12 +12,21 @@
         align-items: center;
         justify-content: space-between;
 
-        :first-child{
-            width: 95%;
+        >:first-child{
+            width: 90%;
         }
 
         div {
             word-break: break-all;
+        }
+    };
+    &__weight-info {
+        width: 10%;
+        display: flex;
+        flex-direction: column;
+        
+        div {
+            text-align: end;
         }
     }
     

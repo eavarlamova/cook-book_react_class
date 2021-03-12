@@ -21,6 +21,7 @@ class Dishes extends PureComponent {
         name: '',
         discription: '',
         callories: 0,
+        weight: 0,
       },
     };
 
@@ -58,6 +59,7 @@ class Dishes extends PureComponent {
           name: '',
           discription: '',
           callories: 0,
+          weight: 0,
         }
       }, () => { setDataToLS('allDishes', this.state.allDishes) })
     }
