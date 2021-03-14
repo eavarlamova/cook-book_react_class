@@ -10,7 +10,7 @@ import { MAX_CARDS_ON_PAGE, ENTER } from '../../utils/constants';
 import Cards from './components/Cards';
 import Navbar from '../../components/Navbar';
 import { getDataFromLS, setDataToLS } from '../../utils/localStorageMethods';
-import { getDishListForRender, getPagesLength, normolizeCurrentPage } from '../../utils/getTempValue';
+import { getListForRender, getPagesLength, normolizeCurrentPage } from '../../utils/getTempValue';
 import "./index.scss";
 
 class Dishes extends PureComponent {
@@ -108,7 +108,7 @@ class Dishes extends PureComponent {
       }
     } = this;
 
-    const dishListForRender = getDishListForRender(allDishes, currentPage);
+    const dishListForRender = getListForRender(allDishes, currentPage);
     const lengthOfAllDishes = allDishes.length;
     const allPages = getPagesLength(allDishes);
 

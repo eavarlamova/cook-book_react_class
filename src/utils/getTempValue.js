@@ -1,6 +1,6 @@
 import { MAX_CARDS_ON_PAGE } from './constants';
 
-export const getDishListForRender = (arrayForList, currentPage) => {
+export const getListForRender = (arrayForList, currentPage) => {
   const startIndex = (currentPage - 1) * MAX_CARDS_ON_PAGE;
   const endIndex = startIndex + MAX_CARDS_ON_PAGE;
   return arrayForList.slice(startIndex, endIndex);

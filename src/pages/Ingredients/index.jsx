@@ -13,8 +13,10 @@ import {
 import Cards from './components/Cards';
 import Navbar from '../../components/Navbar';
 import { setDataToLS, getDataFromLS } from '../../utils/localStorageMethods';
+import { getListForRender, getPagesLength, normolizeCurrentPage } from '../../utils/getTempValue';
 
 import './index.scss';
+import { Pagination } from '@material-ui/lab';
 
 class Ingredients extends PureComponent {
   constructor(props) {
@@ -30,7 +32,8 @@ class Ingredients extends PureComponent {
         calloriesTotal: 0,
         calloriesIn100Grams: 0,
         dishId: this.props.match.params.id,
-      }
+      },
+      currentPage: 1,
     }
 
     this.handleChange = this.handleChange.bind(this);
@@ -38,6 +41,7 @@ class Ingredients extends PureComponent {
     this.updateDataInLS = this.updateDataInLS.bind(this);
     this.deleteIngredient = this.deleteIngredient.bind(this);
     this.chooseNumberFromString = this.chooseNumberFromString.bind(this);
+    this.handleChangeCurrentPage = this.handleChangeCurrentPage.bind(this);
     this.setChangingValueForCurrentDish = this.setChangingValueForCurrentDish.bind(this);
   };
 
@@ -116,6 +120,12 @@ class Ingredients extends PureComponent {
     })
   };
 
+  handleChangeCurrentPage(event, newCurrentPage) {
+    this.setState({
+      currentPage: newCurrentPage,
+    })
+  };
+
   updateDataInLS() {
     setDataToLS('allIngredients', this.state.allIngredients);
     this.setChangingValueForCurrentDish();
@@ -158,7 +168,12 @@ class Ingredients extends PureComponent {
           calloriesTotal: 0,
           dishId: id,
         },
-      }, this.updateDataInLS)
+      }, () => {
+        this.setState({
+          currentPage: getPagesLength(this.state.allIngredientsOfCurrentDish),
+        })
+        this.updateDataInLS();
+      })
     }
   };
 
@@ -175,22 +190,31 @@ class Ingredients extends PureComponent {
     this.setState({
       allIngredients: updateAllIngredients,
       allIngredientsOfCurrentDish: updateAllIngredientsOfCurrentDish,
-    }, this.updateDataInLS)
+    }, () => {
+      this.setState(({ allIngredientsOfCurrentDish, currentPage }) => ({
+        currentPage: normolizeCurrentPage(allIngredientsOfCurrentDish, currentPage)
+      }))
+      this.updateDataInLS();
+    })
   };
 
   render() {
     const {
       state: {
         allIngredientsOfCurrentDish,
-        currentIngredient: {
-          name,
-          gramsTotal,
-          calloriesTotal,
-          calloriesIn100Grams,
-        }
+        currentIngredient,
+        currentPage,
       }
     } = this;
+    const {
+      name,
+      gramsTotal,
+      calloriesTotal,
+      calloriesIn100Grams,
+    } = currentIngredient;
 
+    const ingredientListForRender = getListForRender(allIngredientsOfCurrentDish, currentPage);
+    const allPagesForRender = getPagesLength(allIngredientsOfCurrentDish);
     return (
       <>
         <Navbar> ingredients </Navbar>
@@ -243,10 +267,17 @@ class Ingredients extends PureComponent {
           </Button>
           </div>
           <Cards
-            allIngredients={allIngredientsOfCurrentDish}
+            allIngredients={ingredientListForRender}
             deleteIngredient={this.deleteIngredient}
             className="ingredient__card"
           />
+          {
+            allIngredientsOfCurrentDish.length
+              ?
+              <Pagination page={currentPage} count={allPagesForRender} onChange={this.handleChangeCurrentPage} />
+              :
+              'you have no ingredients... change it!'
+          }
         </div>
       </>
     )
