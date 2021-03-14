@@ -4,6 +4,7 @@ import {
   Button,
   TextField,
   InputAdornment,
+  Typography,
 } from '@material-ui/core';
 import {
   Clear as ClearIcon,
@@ -213,6 +214,7 @@ class Ingredients extends PureComponent {
       calloriesIn100Grams,
     } = currentIngredient;
 
+    const allIngredientsOfCurrentDishLength = allIngredientsOfCurrentDish.length;
     const ingredientListForRender = getListForRender(allIngredientsOfCurrentDish, currentPage);
     const allPagesForRender = getPagesLength(allIngredientsOfCurrentDish);
     return (
@@ -266,6 +268,15 @@ class Ingredients extends PureComponent {
               add ingredient
           </Button>
           </div>
+          <Typography color='textSecondary'>
+            {
+              allIngredientsOfCurrentDishLength
+                ?
+                `steal ${allIngredientsOfCurrentDishLength} ingredients`
+                :
+                'you have no any ingredients... change it!'
+            }
+          </Typography>
           <Cards
             allIngredients={ingredientListForRender}
             deleteIngredient={this.deleteIngredient}
@@ -276,7 +287,7 @@ class Ingredients extends PureComponent {
               ?
               <Pagination page={currentPage} count={allPagesForRender} onChange={this.handleChangeCurrentPage} />
               :
-              'you have no ingredients... change it!'
+              ''
           }
         </div>
       </>

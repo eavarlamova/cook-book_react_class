@@ -3,6 +3,7 @@ import React, { PureComponent } from 'react';
 import {
   Button,
   TextField,
+  Typography,
 } from '@material-ui/core';
 import { Pagination } from '@material-ui/lab';
 
@@ -140,7 +141,7 @@ class Dishes extends PureComponent {
             add dish
           </Button>
 
-          <div>
+          <Typography color='textSecondary'>
             {
               lengthOfAllDishes
                 ?
@@ -148,10 +149,16 @@ class Dishes extends PureComponent {
                 :
                 'you have no any dishes... change it!'
             }
-          </div>
+          </Typography>
 
           <Cards allDishes={dishListForRender} deleteDish={this.deleteDish} />
-          <Pagination count={allPages} page={currentPage} onChange={this.handleChangeCurrentPage} />
+          {
+            allDishes.length
+              ?
+              <Pagination count={allPages} page={currentPage} onChange={this.handleChangeCurrentPage} />
+              :
+              ''
+          }
         </div>
       </div>
     )

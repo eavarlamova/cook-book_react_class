@@ -40,7 +40,7 @@ class Cards extends PureComponent {
                       <div> {weight} g </div>
                     </Tooltip>
                     <Tooltip title='call in 100g' aria-label='call in 100g'>
-                      <div> {Math.ceil((callories / weight)*100)} call </div>
+                      <div> {Math.ceil((callories / weight)*100) || 0} call </div>
                     </Tooltip>
                   </div>
                 </CardContent>
