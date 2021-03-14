@@ -4,11 +4,13 @@ import {
   Button,
   TextField,
 } from '@material-ui/core';
+import { Pagination } from '@material-ui/lab';
 
+import { MAX_CARDS_ON_PAGE, ENTER } from '../../utils/constants';
 import Cards from './components/Cards';
 import Navbar from '../../components/Navbar';
 import { getDataFromLS, setDataToLS } from '../../utils/localStorageMethods';
-
+import { getDishListForRender, getPagesLength, normolizeCurrentPage } from '../../utils/getTempValue';
 import "./index.scss";
 
 class Dishes extends PureComponent {
@@ -24,11 +26,13 @@ class Dishes extends PureComponent {
         callories: 0,
         weight: 0,
       },
+      currentPage: 1,
     };
 
     this.addDish = this.addDish.bind(this);
     this.deleteDish = this.deleteDish.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.handleChangeCurrentPage = this.handleChangeCurrentPage.bind(this);
   };
 
   componentDidMount() {
@@ -40,6 +44,12 @@ class Dishes extends PureComponent {
   handleChange({ target: { name, value } }) {
     this.setState({
       currentDish: { ...this.state.currentDish, [name]: value }
+    })
+  };
+
+  handleChangeCurrentPage(event, newCurrentPage) {
+    this.setState({
+      currentPage: newCurrentPage,
     })
   };
 
@@ -61,8 +71,12 @@ class Dishes extends PureComponent {
           discription: '',
           callories: 0,
           weight: 0,
-        }
-      }, () => { setDataToLS('allDishes', this.state.allDishes) })
+        },
+      }, () => {
+        const { state: { allDishes } } = this;
+        setDataToLS('allDishes', allDishes);
+        this.handleChangeCurrentPage(null, getPagesLength(allDishes));
+      })
     }
   };
 
@@ -71,11 +85,16 @@ class Dishes extends PureComponent {
     this.setState({
       allDishes: updateAllDishes,
     }, () => {
-      setDataToLS('allDishes', this.state.allDishes)
+      const { state: { allDishes, currentPage } } = this;
+      this.setState({
+        currentPage: normolizeCurrentPage(allDishes, currentPage)
+      })
+      setDataToLS('allDishes', allDishes)
       const allIngredients = getDataFromLS('allIngredients').filter(({ dishId }) => (Number(dishId) !== idOfCurrentDish));
       setDataToLS('allIngredients', allIngredients);
     });
   };
+
 
   render() {
     const {
@@ -85,9 +104,14 @@ class Dishes extends PureComponent {
           discription
         },
         allDishes,
+        currentPage,
       }
     } = this;
-    
+
+    const dishListForRender = getDishListForRender(allDishes, currentPage);
+    const lengthOfAllDishes = allDishes.length;
+    const allPages = getPagesLength(allDishes);
+
     return (
       <div className="dish">
         <Navbar> dishes </Navbar>
@@ -116,7 +140,18 @@ class Dishes extends PureComponent {
             add dish
           </Button>
 
-          <Cards allDishes={allDishes} deleteDish={this.deleteDish} />
+          <div>
+            {
+              lengthOfAllDishes
+                ?
+                `you have ${lengthOfAllDishes} dishes in your list`
+                :
+                'you have no any dishes... change it!'
+            }
+          </div>
+
+          <Cards allDishes={dishListForRender} deleteDish={this.deleteDish} />
+          <Pagination count={allPages} page={currentPage} onChange={this.handleChangeCurrentPage} />
         </div>
       </div>
     )
