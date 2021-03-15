@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { PropTypes } from 'prop-types';
 
 import {
   Link,
@@ -14,14 +15,20 @@ import '../../index.scss';
 
 class Cards extends PureComponent {
   render() {
-    const { props: { allDishes, deleteDish } } = this;
+    const {
+      props: {
+        allDishes,
+        deleteDish,
+      },
+    } = this;
     return (
       <>
         {
           allDishes
-            ?
-            allDishes.map(({ id, name, discription, callories, weight }) => (
-              <Card className='dish__card' key={id}>
+            ? allDishes.map(({
+              id, name, discription, callories, weight,
+            }) => (
+              <Card className="dish__card" key={id}>
 
                 <CardContent className="dish__card-discription">
                   <div>
@@ -33,14 +40,32 @@ class Cards extends PureComponent {
                     </Typography>
                   </div>
                   <div className="dish__weight-info">
-                    <Tooltip title='callories' aria-label='callories'>
-                      <div> {Math.ceil(callories)} call </div>
+                    <Tooltip title="callories" aria-label="callories">
+                      <div>
+                        {' '}
+                        {Math.ceil(callories)}
+                        {' '}
+                        call
+                        {' '}
+                      </div>
                     </Tooltip>
-                    <Tooltip title='weight' aria-label='weight in grams'>
-                      <div> {weight} g </div>
+                    <Tooltip title="weight" aria-label="weight in grams">
+                      <div>
+                        {' '}
+                        {weight}
+                        {' '}
+                        g
+                        {' '}
+                      </div>
                     </Tooltip>
-                    <Tooltip title='call in 100g' aria-label='call in 100g'>
-                      <div> {Math.ceil((callories / weight)*100) || 0} call </div>
+                    <Tooltip title="call in 100g" aria-label="call in 100g">
+                      <div>
+                        {' '}
+                        {Math.ceil((callories / weight) * 100) || 0}
+                        {' '}
+                        call
+                        {' '}
+                      </div>
                     </Tooltip>
                   </div>
                 </CardContent>
@@ -50,18 +75,22 @@ class Cards extends PureComponent {
                       open ingrededients
                     </Button>
                   </Link>
-                  <Button size="small" color="primary" onClick={() => { deleteDish(id) }}>
+                  <Button size="small" color="primary" onClick={() => { deleteDish(id); }}>
                     delete
                   </Button>
                 </CardActions>
               </Card>
             ))
-            :
-            ''
+            : ''
         }
       </>
-    )
+    );
   }
 }
+
+Cards.propTypes = {
+  allDishes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  deleteDish: PropTypes.func.isRequired,
+};
 
 export default Cards;

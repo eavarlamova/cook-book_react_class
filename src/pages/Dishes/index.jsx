@@ -7,12 +7,13 @@ import {
 } from '@material-ui/core';
 import { Pagination } from '@material-ui/lab';
 
-import { MAX_CARDS_ON_PAGE, ENTER } from '../../utils/constants';
 import Cards from './components/Cards';
 import Navbar from '../../components/Navbar';
+import { ENTER } from '../../utils/constants';
 import { getDataFromLS, setDataToLS } from '../../utils/localStorageMethods';
 import { getListForRender, getPagesLength, normolizeCurrentPage } from '../../utils/getTempValue';
-import "./index.scss";
+
+import './index.scss';
 
 class Dishes extends PureComponent {
   constructor(props) {
@@ -33,26 +34,32 @@ class Dishes extends PureComponent {
     this.addDish = this.addDish.bind(this);
     this.deleteDish = this.deleteDish.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
     this.handleChangeCurrentPage = this.handleChangeCurrentPage.bind(this);
-  };
+  }
 
   componentDidMount() {
     this.setState({
-      allDishes: getDataFromLS('allDishes')
-    })
+      allDishes: getDataFromLS('allDishes'),
+    });
   }
 
   handleChange({ target: { name, value } }) {
+    const { state: { currentDish } } = this;
     this.setState({
-      currentDish: { ...this.state.currentDish, [name]: value }
-    })
-  };
+      currentDish: { ...currentDish, [name]: value },
+    });
+  }
 
   handleChangeCurrentPage(event, newCurrentPage) {
     this.setState({
       currentPage: newCurrentPage,
-    })
-  };
+    });
+  }
+
+  handleKeyPress({ key }) {
+    if (key === ENTER) this.addDish();
+  }
 
   addDish() {
     const { state: { currentDish, allDishes } } = this;
@@ -64,7 +71,7 @@ class Dishes extends PureComponent {
             ...currentDish,
             name: currentDish.name.trim(),
             discription: currentDish.discription.trim(),
-          }
+          },
         ],
         currentDish: {
           id: Math.random(),
@@ -74,39 +81,39 @@ class Dishes extends PureComponent {
           weight: 0,
         },
       }, () => {
-        const { state: { allDishes } } = this;
-        setDataToLS('allDishes', allDishes);
-        this.handleChangeCurrentPage(null, getPagesLength(allDishes));
-      })
+        const { state: { allDishes: allDishesUpdate } } = this;
+        setDataToLS('allDishes', allDishesUpdate);
+        this.handleChangeCurrentPage(null, getPagesLength(allDishesUpdate));
+      });
     }
-  };
+  }
 
   deleteDish(idOfCurrentDish) {
-    const updateAllDishes = this.state.allDishes.filter(({ id }) => id !== idOfCurrentDish);
+    const { state: { allDishes } } = this;
+    const updateAllDishes = allDishes.filter(({ id }) => id !== idOfCurrentDish);
     this.setState({
       allDishes: updateAllDishes,
     }, () => {
-      const { state: { allDishes, currentPage } } = this;
+      const { state: { allDishes: allDishesUpdate, currentPage } } = this;
       this.setState({
-        currentPage: normolizeCurrentPage(allDishes, currentPage)
-      })
-      setDataToLS('allDishes', allDishes)
+        currentPage: normolizeCurrentPage(allDishesUpdate, currentPage),
+      });
+      setDataToLS('allDishes', allDishesUpdate);
       const allIngredients = getDataFromLS('allIngredients').filter(({ dishId }) => (Number(dishId) !== idOfCurrentDish));
       setDataToLS('allIngredients', allIngredients);
     });
-  };
-
+  }
 
   render() {
     const {
       state: {
         currentDish: {
           name,
-          discription
+          discription,
         },
         allDishes,
         currentPage,
-      }
+      },
     } = this;
 
     const dishListForRender = getListForRender(allDishes, currentPage);
@@ -121,6 +128,7 @@ class Dishes extends PureComponent {
             name="name"
             value={name}
             onChange={this.handleChange}
+            onKeyPress={this.handleKeyPress}
             label="add name dish"
             fullWidth
           />
@@ -128,6 +136,7 @@ class Dishes extends PureComponent {
             name="discription"
             value={discription}
             onChange={this.handleChange}
+            onKeyPress={this.handleKeyPress}
             label="add discription dish"
             fullWidth
             multiline
@@ -141,28 +150,30 @@ class Dishes extends PureComponent {
             add dish
           </Button>
 
-          <Typography color='textSecondary'>
+          <Typography color="textSecondary">
             {
               lengthOfAllDishes
-                ?
-                `you have ${lengthOfAllDishes} dishes in your list`
-                :
-                'you have no any dishes... change it!'
+                ? `you have ${lengthOfAllDishes} dishes in your list`
+                : 'you have no any dishes... change it!'
             }
           </Typography>
 
           <Cards allDishes={dishListForRender} deleteDish={this.deleteDish} />
           {
             allDishes.length
-              ?
-              <Pagination count={allPages} page={currentPage} onChange={this.handleChangeCurrentPage} />
-              :
-              ''
+              ? (
+                <Pagination
+                  count={allPages}
+                  page={currentPage}
+                  onChange={this.handleChangeCurrentPage}
+                />
+              )
+              : ''
           }
         </div>
       </div>
-    )
+    );
   }
-};
+}
 
 export default Dishes;

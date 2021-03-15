@@ -1,26 +1,35 @@
-import React, { PureComponent }  from 'react';
+import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
 
-import { AppBar, Toolbar, Link } from '@material-ui/core/';
+import {
+  AppBar,
+  Toolbar,
+  Link,
+} from '@material-ui/core/';
 
-import "./index.scss";
+import './index.scss';
 
 class Navbar extends PureComponent {
-    constructor(props) {
-        super(props)
-    }
-
-    render() {
-        return (
-            <div className="navbar">
-                <AppBar position="static">
-                    <Toolbar className="navbar__content">
-                        <>It's your {this.props.children}</>
-                        {this.props.children.trim() !== 'dishes' ? <Link href="/" color="inherit"> look dishes</Link> : ''}
-                    </Toolbar>
-                </AppBar>
-            </div>
-        );
-    }
+  render() {
+    const { props: { children } } = this;
+    return (
+      <div className="navbar">
+        <AppBar position="static">
+          <Toolbar className="navbar__content">
+            <>
+              It is your
+              {children}
+            </>
+            {children.trim() !== 'dishes' ? <Link href="/" color="inherit"> look dishes</Link> : ''}
+          </Toolbar>
+        </AppBar>
+      </div>
+    );
+  }
 }
+
+Navbar.propTypes = {
+  children: PropTypes.string.isRequired,
+};
 
 export default Navbar;

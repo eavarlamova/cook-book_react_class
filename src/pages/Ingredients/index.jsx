@@ -1,4 +1,6 @@
 import React, { PureComponent } from 'react';
+import { withRouter } from 'react-router-dom';
+import { PropTypes } from 'prop-types';
 
 import {
   Button,
@@ -8,16 +10,22 @@ import {
 } from '@material-ui/core';
 import {
   Clear as ClearIcon,
-  DragHandle as DragHandleIcon
+  DragHandle as DragHandleIcon,
 } from '@material-ui/icons/';
+import { Pagination } from '@material-ui/lab';
 
+import {
+  getPagesLength,
+  getListForRender,
+  normolizeCurrentPage,
+  chooseNumberFromString,
+} from '../../utils/getTempValue';
 import Cards from './components/Cards';
 import Navbar from '../../components/Navbar';
+import { ENTER } from '../../utils/constants';
 import { setDataToLS, getDataFromLS } from '../../utils/localStorageMethods';
-import { getListForRender, getPagesLength, normolizeCurrentPage } from '../../utils/getTempValue';
 
 import './index.scss';
-import { Pagination } from '@material-ui/lab';
 
 class Ingredients extends PureComponent {
   constructor(props) {
@@ -32,32 +40,84 @@ class Ingredients extends PureComponent {
         gramsTotal: 0,
         calloriesTotal: 0,
         calloriesIn100Grams: 0,
-        dishId: this.props.match.params.id,
+        dishId: null,
       },
       currentPage: 1,
-    }
+    };
 
     this.handleChange = this.handleChange.bind(this);
     this.addIngredient = this.addIngredient.bind(this);
     this.updateDataInLS = this.updateDataInLS.bind(this);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
     this.deleteIngredient = this.deleteIngredient.bind(this);
-    this.chooseNumberFromString = this.chooseNumberFromString.bind(this);
     this.handleChangeCurrentPage = this.handleChangeCurrentPage.bind(this);
     this.setChangingValueForCurrentDish = this.setChangingValueForCurrentDish.bind(this);
-  };
+  }
 
   componentDidMount() {
+    const {
+      props: {
+        match: {
+          params: {
+            id,
+          },
+        },
+        history,
+      },
+      state: {
+        currentIngredient,
+      },
+    } = this;
+    const fakeURL = Boolean(getDataFromLS('allDishes').find(({ id: dishId }) => dishId === Number(id)) === undefined);
+    if (fakeURL) history.push('/');
     const allIngredients = getDataFromLS('allIngredients');
-    const allIngredientsOfCurrentDish = allIngredients.filter(({ dishId }) => dishId === this.props.match.params.id);
+    const allIngredientsOfCurrentDish = allIngredients
+      .filter(({ dishId }) => dishId === id);
     this.setState({
-      allIngredients: allIngredients,
-      allIngredientsOfCurrentDish: allIngredientsOfCurrentDish,
-    })
-  };
+      allIngredients,
+      allIngredientsOfCurrentDish,
+      currentIngredient: {
+        ...currentIngredient,
+        dishId: id,
+      },
+    });
+  }
 
-  chooseNumberFromString(value) {
-    return Number(String(value).replace(/\D/g, ''));
-  };
+  handleChange({ target: { name, value } }) {
+    const valueAfterNormolize = name === 'name' ? value : chooseNumberFromString(value);
+    this.setState(({ currentIngredient: prevCurrentIngredient }) => ({
+      currentIngredient: {
+        ...prevCurrentIngredient,
+        [name]: valueAfterNormolize,
+      },
+    }), () => {
+      const {
+        state: {
+          currentIngredient: {
+            gramsTotal,
+            calloriesTotal,
+            calloriesIn100Grams,
+          },
+        },
+      } = this;
+      this.setState(({ currentIngredient: prevCurrentIngredient }) => ({
+        currentIngredient: {
+          ...prevCurrentIngredient,
+          calloriesTotal: name === 'name' ? calloriesTotal : ((calloriesIn100Grams / 100) * gramsTotal),
+        },
+      }));
+    });
+  }
+
+  handleChangeCurrentPage(event, newCurrentPage) {
+    this.setState({
+      currentPage: newCurrentPage,
+    });
+  }
+
+  handleKeyPress({ key }) {
+    if (key === ENTER) this.addIngredient();
+  }
 
   setChangingValueForCurrentDish() {
     const {
@@ -67,70 +127,36 @@ class Ingredients extends PureComponent {
       props: {
         match: {
           params: {
-            id: idOfCurrentDish
-          }
-        }
-      }
+            id: idOfCurrentDish,
+          },
+        },
+      },
     } = this;
 
-    const totalValueForCurrentDish = allIngredientsOfCurrentDish.reduce((totalValue, { gramsTotal, calloriesTotal }) => ({
-      grams: totalValue.grams + gramsTotal,
-      callories: totalValue.callories + calloriesTotal,
-    }), { grams: 0, callories: 0 });
+    const totalValueForCurrentDish = allIngredientsOfCurrentDish
+      .reduce((totalValue, { gramsTotal, calloriesTotal }) => ({
+        grams: totalValue.grams + gramsTotal,
+        callories: totalValue.callories + calloriesTotal,
+      }), { grams: 0, callories: 0 });
 
     const allDishes = getDataFromLS('allDishes')
-      .map((item) =>
-        item.id === Number(idOfCurrentDish)
-          ?
-          {
-            ...item,
-            weight: totalValueForCurrentDish.grams,
-            callories: totalValueForCurrentDish.callories
-          }
-          :
-          {
-            ...item
-          }
-      );
+      .map((item) => (item.id === Number(idOfCurrentDish)
+        ? {
+          ...item,
+          weight: totalValueForCurrentDish.grams,
+          callories: totalValueForCurrentDish.callories,
+        }
+        : {
+          ...item,
+        }));
     setDataToLS('allDishes', allDishes);
-  };
-
-  handleChange({ target: { name, value } }) {
-    const valueAfterNormolize = name === 'name' ? value : this.chooseNumberFromString(value);
-    this.setState({
-      currentIngredient: {
-        ...this.state.currentIngredient,
-        [name]: valueAfterNormolize,
-      },
-    }, () => {
-      const {
-        state: {
-          currentIngredient: {
-            gramsTotal,
-            calloriesTotal,
-            calloriesIn100Grams,
-          }
-        }
-      } = this;
-      this.setState({
-        currentIngredient: {
-          ...this.state.currentIngredient,
-          calloriesTotal: name === 'name' ? calloriesTotal : calloriesIn100Grams / 100 * gramsTotal
-        }
-      })
-    })
-  };
-
-  handleChangeCurrentPage(event, newCurrentPage) {
-    this.setState({
-      currentPage: newCurrentPage,
-    })
-  };
+  }
 
   updateDataInLS() {
-    setDataToLS('allIngredients', this.state.allIngredients);
+    const { state: { allIngredients } } = this;
+    setDataToLS('allIngredients', allIngredients);
     this.setChangingValueForCurrentDish();
-  };
+  }
 
   addIngredient() {
     const {
@@ -142,15 +168,15 @@ class Ingredients extends PureComponent {
       props: {
         match: {
           params: {
-            id
-          }
-        }
-      }
+            id,
+          },
+        },
+      },
     } = this;
     if (currentIngredient.name.trim() && currentIngredient.dishId === id) {
       const newIngredient = {
         ...currentIngredient,
-        name: currentIngredient.name.trim()
+        name: currentIngredient.name.trim(),
       };
       this.setState({
         allIngredients: [
@@ -170,34 +196,38 @@ class Ingredients extends PureComponent {
           dishId: id,
         },
       }, () => {
-        this.setState({
-          currentPage: getPagesLength(this.state.allIngredientsOfCurrentDish),
-        })
+        this.setState(({ allIngredientsOfCurrentDish: prevAllIngredientsOfCurrentDish }) => ({
+          currentPage: getPagesLength(prevAllIngredientsOfCurrentDish),
+        }));
         this.updateDataInLS();
-      })
+      });
     }
-  };
+  }
 
   deleteIngredient(idOfDeletingIngredient) {
     const {
       state: {
         allIngredients,
         allIngredientsOfCurrentDish,
-      }
+      },
     } = this;
     const updateAllIngredients = allIngredients.filter(({ id }) => id !== idOfDeletingIngredient);
-    const updateAllIngredientsOfCurrentDish = allIngredientsOfCurrentDish.filter(({ id }) => id !== idOfDeletingIngredient);
+    const updateAllIngredientsOfCurrentDish = allIngredientsOfCurrentDish
+      .filter(({ id }) => id !== idOfDeletingIngredient);
 
     this.setState({
       allIngredients: updateAllIngredients,
       allIngredientsOfCurrentDish: updateAllIngredientsOfCurrentDish,
     }, () => {
-      this.setState(({ allIngredientsOfCurrentDish, currentPage }) => ({
-        currentPage: normolizeCurrentPage(allIngredientsOfCurrentDish, currentPage)
-      }))
+      this.setState(({
+        currentPage: prevCurrentPage,
+        allIngredientsOfCurrentDish: prevAllIngredientsOfCurrentDish,
+      }) => ({
+        currentPage: normolizeCurrentPage(prevAllIngredientsOfCurrentDish, prevCurrentPage),
+      }));
       this.updateDataInLS();
-    })
-  };
+    });
+  }
 
   render() {
     const {
@@ -205,7 +235,7 @@ class Ingredients extends PureComponent {
         allIngredientsOfCurrentDish,
         currentIngredient,
         currentPage,
-      }
+      },
     } = this;
     const {
       name,
@@ -226,14 +256,16 @@ class Ingredients extends PureComponent {
               name="name"
               value={name}
               onChange={this.handleChange}
+              onKeyPress={this.handleKeyPress}
               label="add name ingredient"
               fullWidth
             />
-            <div className='ingredient__count-callories'>
+            <div className="ingredient__count-callories">
               <TextField
                 name="calloriesIn100Grams"
-                value={this.chooseNumberFromString(calloriesIn100Grams)}
+                value={chooseNumberFromString(calloriesIn100Grams)}
                 onChange={this.handleChange}
+                onKeyPress={this.handleKeyPress}
                 InputProps={{
                   startAdornment: <InputAdornment position="start">calls in 100grams</InputAdornment>,
                 }}
@@ -242,8 +274,9 @@ class Ingredients extends PureComponent {
               <ClearIcon />
               <TextField
                 name="gramsTotal"
-                value={this.chooseNumberFromString(gramsTotal)}
+                value={chooseNumberFromString(gramsTotal)}
                 onChange={this.handleChange}
+                onKeyPress={this.handleKeyPress}
                 InputProps={{
                   startAdornment: <InputAdornment position="start">total grams</InputAdornment>,
                 }}
@@ -266,15 +299,13 @@ class Ingredients extends PureComponent {
               fullWidth
             >
               add ingredient
-          </Button>
+            </Button>
           </div>
-          <Typography color='textSecondary'>
+          <Typography color="textSecondary">
             {
               allIngredientsOfCurrentDishLength
-                ?
-                `steal ${allIngredientsOfCurrentDishLength} ingredients`
-                :
-                'you have no any ingredients... change it!'
+                ? `steal ${allIngredientsOfCurrentDishLength} ingredients`
+                : 'you have no any ingredients... change it!'
             }
           </Typography>
           <Cards
@@ -284,15 +315,30 @@ class Ingredients extends PureComponent {
           />
           {
             allIngredientsOfCurrentDish.length
-              ?
-              <Pagination page={currentPage} count={allPagesForRender} onChange={this.handleChangeCurrentPage} />
-              :
-              ''
+              ? (
+                <Pagination
+                  page={currentPage}
+                  count={allPagesForRender}
+                  onChange={this.handleChangeCurrentPage}
+                />
+              )
+              : ''
           }
         </div>
       </>
-    )
+    );
   }
+}
+
+Ingredients.propTypes = {
+  match: PropTypes.objectOf(
+    PropTypes.oneOfType([
+      PropTypes.object,
+      PropTypes.string,
+      PropTypes.bool,
+    ]),
+  ).isRequired,
+  history: PropTypes.objectOf().isRequired,
 };
 
-export default Ingredients;
+export default withRouter(Ingredients);

@@ -12,3 +12,5 @@ export const normolizeCurrentPage = (array, currentPage) => {
   const lastPage = getPagesLength(array);
   return currentPage > lastPage ? lastPage : currentPage || 1;
 };
+
+export const chooseNumberFromString = (value) => Number(String(value).replace(/\D/g, ''));

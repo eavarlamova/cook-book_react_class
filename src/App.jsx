@@ -3,7 +3,7 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Redirect
+  Redirect,
 } from 'react-router-dom';
 
 import Dishes from './pages/Dishes';
@@ -14,9 +14,9 @@ class App extends PureComponent {
     return (
       <Router>
         <Switch>
-          <Route path='/' component={Dishes} exact />
-          <Route path='/:id' component={Ingredients} exact />
-          <Redirect to='/' />
+          <Route path="/" component={Dishes} exact />
+          <Route path="/:id" component={Ingredients} exact />
+          <Redirect to="/" />
         </Switch>
       </Router>
     );
