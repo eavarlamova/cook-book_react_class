@@ -1,9 +1,11 @@
-import React, { PureComponent } from 'react';
+import React, {
+  PureComponent,
+} from 'react';
 import {
-  BrowserRouter as Router,
-  Switch,
   Route,
+  Switch,
   Redirect,
+  BrowserRouter as Router,
 } from 'react-router-dom';
 
 import Dishes from './pages/Dishes';
