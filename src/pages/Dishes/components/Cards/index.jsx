@@ -1,14 +1,16 @@
-import React, { PureComponent } from 'react';
+import React, {
+  PureComponent,
+} from 'react';
 import { PropTypes } from 'prop-types';
 
 import {
   Link,
   Card,
   Button,
+  Tooltip,
   Typography,
   CardActions,
   CardContent,
-  Tooltip,
 } from '@material-ui/core';
 
 import '../../index.scss';
@@ -26,21 +28,38 @@ class Cards extends PureComponent {
         {
           allDishes
             ? allDishes.map(({
-              id, name, discription, callories, weight,
+              id,
+              name,
+              weight,
+              callories,
+              discription,
             }) => (
-              <Card className="dish__card" key={id}>
-
+              <Card
+                key={id}
+                className="dish__card"
+              >
                 <CardContent className="dish__card-discription">
                   <div>
-                    <Typography gutterBottom variant="h5" component="h2">
+                    <Typography
+                      variant="h5"
+                      gutterBottom
+                      component="h2"
+                    >
                       {name}
                     </Typography>
-                    <Typography variant="body2" color="textSecondary" component="p">
+                    <Typography
+                      component="p"
+                      variant="body2"
+                      color="textSecondary"
+                    >
                       {discription}
                     </Typography>
                   </div>
                   <div className="dish__weight-info">
-                    <Tooltip title="callories" aria-label="callories">
+                    <Tooltip
+                      title="callories"
+                      aria-label="callories"
+                    >
                       <div>
                         {' '}
                         {Math.ceil(callories)}
@@ -49,7 +68,10 @@ class Cards extends PureComponent {
                         {' '}
                       </div>
                     </Tooltip>
-                    <Tooltip title="weight" aria-label="weight in grams">
+                    <Tooltip
+                      title="weight"
+                      aria-label="weight in grams"
+                    >
                       <div>
                         {' '}
                         {weight}
@@ -58,7 +80,10 @@ class Cards extends PureComponent {
                         {' '}
                       </div>
                     </Tooltip>
-                    <Tooltip title="call in 100g" aria-label="call in 100g">
+                    <Tooltip
+                      title="call in 100g"
+                      aria-label="call in 100g"
+                    >
                       <div>
                         {' '}
                         {Math.ceil((callories / weight) * 100) || 0}
@@ -71,11 +96,18 @@ class Cards extends PureComponent {
                 </CardContent>
                 <CardActions>
                   <Link href={`/${id}`}>
-                    <Button size="small" color="primary">
+                    <Button
+                      size="small"
+                      color="primary"
+                    >
                       open ingrededients
                     </Button>
                   </Link>
-                  <Button size="small" color="primary" onClick={() => { deleteDish(id); }}>
+                  <Button
+                    size="small"
+                    color="primary"
+                    onClick={() => { deleteDish(id); }}
+                  >
                     delete
                   </Button>
                 </CardActions>

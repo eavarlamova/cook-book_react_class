@@ -1,4 +1,6 @@
-import React, { PureComponent } from 'react';
+import React, {
+  PureComponent,
+} from 'react';
 import { PropTypes } from 'prop-types';
 
 import {
@@ -17,19 +19,35 @@ class Cards extends PureComponent {
         deleteIngredient,
       },
     } = this;
+
     return (
       <>
         {allIngredients
           ? allIngredients.map(({
-            id, name, calloriesIn100Grams, gramsTotal, calloriesTotal,
+            id,
+            name,
+            gramsTotal,
+            calloriesTotal,
+            calloriesIn100Grams,
           }) => (
-            <Card className="ingredient__card" key={id}>
+            <Card
+              key={id}
+              className="ingredient__card"
+            >
               <CardContent className="ingredient__card-discription">
                 <div>
-                  <Typography gutterBottom variant="h5" component="h2">
+                  <Typography
+                    variant="h5"
+                    gutterBottom
+                    component="h2"
+                  >
                     {name}
                   </Typography>
-                  <Typography variant="body2" color="textSecondary" component="p">
+                  <Typography
+                    component="p"
+                    variant="body2"
+                    color="textSecondary"
+                  >
                     {calloriesIn100Grams}
                     {' '}
                     call X

@@ -1,12 +1,14 @@
-import React, { PureComponent } from 'react';
-import { withRouter } from 'react-router-dom';
+import React, {
+  PureComponent,
+} from 'react';
 import { PropTypes } from 'prop-types';
+import { withRouter } from 'react-router-dom';
 
 import {
   Button,
   TextField,
-  InputAdornment,
   Typography,
+  InputAdornment,
 } from '@material-ui/core';
 import {
   Clear as ClearIcon,
@@ -190,10 +192,10 @@ class Ingredients extends PureComponent {
         currentIngredient: {
           id: Math.random(),
           name: '',
-          calloriesIn100Grams: 0,
+          dishId: id,
           gramsTotal: 0,
           calloriesTotal: 0,
-          dishId: id,
+          calloriesIn100Grams: 0,
         },
       }, () => {
         this.setState(({ allIngredientsOfCurrentDish: prevAllIngredientsOfCurrentDish }) => ({
@@ -232,9 +234,9 @@ class Ingredients extends PureComponent {
   render() {
     const {
       state: {
-        allIngredientsOfCurrentDish,
-        currentIngredient,
         currentPage,
+        currentIngredient,
+        allIngredientsOfCurrentDish,
       },
     } = this;
     const {
@@ -247,56 +249,57 @@ class Ingredients extends PureComponent {
     const allIngredientsOfCurrentDishLength = allIngredientsOfCurrentDish.length;
     const ingredientListForRender = getListForRender(allIngredientsOfCurrentDish, currentPage);
     const allPagesForRender = getPagesLength(allIngredientsOfCurrentDish);
+
     return (
       <>
         <Navbar> ingredients </Navbar>
         <div className="ingredient">
           <div className="ingredient__add-form">
             <TextField
+              fullWidth
               name="name"
               value={name}
+              label="add name ingredient"
               onChange={this.handleChange}
               onKeyPress={this.handleKeyPress}
-              label="add name ingredient"
-              fullWidth
             />
             <div className="ingredient__count-callories">
               <TextField
+                label="add in 100 grams"
                 name="calloriesIn100Grams"
-                value={chooseNumberFromString(calloriesIn100Grams)}
                 onChange={this.handleChange}
                 onKeyPress={this.handleKeyPress}
+                value={chooseNumberFromString(calloriesIn100Grams)}
                 InputProps={{
                   startAdornment: <InputAdornment position="start">calls in 100grams</InputAdornment>,
                 }}
-                label="add in 100 grams"
               />
               <ClearIcon />
               <TextField
                 name="gramsTotal"
-                value={chooseNumberFromString(gramsTotal)}
                 onChange={this.handleChange}
                 onKeyPress={this.handleKeyPress}
+                label="add total grams this ingredient"
+                value={chooseNumberFromString(gramsTotal)}
                 InputProps={{
                   startAdornment: <InputAdornment position="start">total grams</InputAdornment>,
                 }}
-                label="add total grams this ingredient"
               />
               <DragHandleIcon />
               <TextField
                 disabled
                 value={calloriesTotal}
+                label="it`s total callories in this ingredient"
                 InputProps={{
                   startAdornment: <InputAdornment position="start">total calls</InputAdornment>,
                 }}
-                label="it`s total callories in this ingredient"
               />
             </div>
             <Button
-              onClick={this.addIngredient}
+              fullWidth
               color="primary"
               variant="contained"
-              fullWidth
+              onClick={this.addIngredient}
             >
               add ingredient
             </Button>
@@ -309,9 +312,9 @@ class Ingredients extends PureComponent {
             }
           </Typography>
           <Cards
-            allIngredients={ingredientListForRender}
-            deleteIngredient={this.deleteIngredient}
             className="ingredient__card"
+            deleteIngredient={this.deleteIngredient}
+            allIngredients={ingredientListForRender}
           />
           {
             allIngredientsOfCurrentDish.length

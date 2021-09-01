@@ -1,7 +1,11 @@
 %flex-center-80 {
     width: 80%;
+    margin: auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    margin: auto;
+}
+
+body {
+    margin: 0;
 }

@@ -1,10 +1,12 @@
-import React, { PureComponent } from 'react';
+import React, {
+  PureComponent,
+} from 'react';
 import PropTypes from 'prop-types';
 
 import {
+  Link,
   AppBar,
   Toolbar,
-  Link,
 } from '@material-ui/core/';
 
 import './index.scss';
@@ -20,7 +22,18 @@ class Navbar extends PureComponent {
               It is your
               {children}
             </>
-            {children.trim() !== 'dishes' ? <Link href="/" color="inherit"> look dishes</Link> : ''}
+            {
+              children.trim() !== 'dishes'
+                ? (
+                  <Link
+                    href="/"
+                    color="inherit"
+                  >
+                    look dishes
+                  </Link>
+                )
+                : ''
+            }
           </Toolbar>
         </AppBar>
       </div>

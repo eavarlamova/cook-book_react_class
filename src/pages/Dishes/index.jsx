@@ -1,4 +1,6 @@
-import React, { PureComponent } from 'react';
+import React, {
+  PureComponent,
+} from 'react';
 
 import {
   Button,
@@ -10,8 +12,15 @@ import { Pagination } from '@material-ui/lab';
 import Cards from './components/Cards';
 import Navbar from '../../components/Navbar';
 import { ENTER } from '../../utils/constants';
-import { getDataFromLS, setDataToLS } from '../../utils/localStorageMethods';
-import { getListForRender, getPagesLength, normolizeCurrentPage } from '../../utils/getTempValue';
+import {
+  getPagesLength,
+  getListForRender,
+  normolizeCurrentPage,
+} from '../../utils/getTempValue';
+import {
+  setDataToLS,
+  getDataFromLS,
+} from '../../utils/localStorageMethods';
 
 import './index.scss';
 
@@ -24,9 +33,9 @@ class Dishes extends PureComponent {
       currentDish: {
         id: Math.random(),
         name: '',
-        discription: '',
-        callories: 0,
         weight: 0,
+        callories: 0,
+        discription: '',
       },
       currentPage: 1,
     };
@@ -62,7 +71,12 @@ class Dishes extends PureComponent {
   }
 
   addDish() {
-    const { state: { currentDish, allDishes } } = this;
+    const {
+      state: {
+        allDishes,
+        currentDish,
+      },
+    } = this;
     if (currentDish.name.trim() && currentDish.discription.trim()) {
       this.setState({
         allDishes: [
@@ -76,9 +90,9 @@ class Dishes extends PureComponent {
         currentDish: {
           id: Math.random(),
           name: '',
-          discription: '',
-          callories: 0,
           weight: 0,
+          callories: 0,
+          discription: '',
         },
       }, () => {
         const { state: { allDishes: allDishesUpdate } } = this;
@@ -125,27 +139,27 @@ class Dishes extends PureComponent {
         <Navbar> dishes </Navbar>
         <div className="dish__add-form">
           <TextField
+            fullWidth
             name="name"
             value={name}
+            label="add name dish"
             onChange={this.handleChange}
             onKeyPress={this.handleKeyPress}
-            label="add name dish"
-            fullWidth
           />
           <TextField
-            name="discription"
-            value={discription}
-            onChange={this.handleChange}
-            onKeyPress={this.handleKeyPress}
-            label="add discription dish"
             fullWidth
             multiline
+            name="discription"
+            value={discription}
+            label="add discription dish"
+            onChange={this.handleChange}
+            onKeyPress={this.handleKeyPress}
           />
           <Button
-            onClick={this.addDish}
+            fullWidth
             color="primary"
             variant="contained"
-            fullWidth
+            onClick={this.addDish}
           >
             add dish
           </Button>
@@ -158,7 +172,10 @@ class Dishes extends PureComponent {
             }
           </Typography>
 
-          <Cards allDishes={dishListForRender} deleteDish={this.deleteDish} />
+          <Cards
+            deleteDish={this.deleteDish}
+            allDishes={dishListForRender}
+          />
           {
             allDishes.length
               ? (
